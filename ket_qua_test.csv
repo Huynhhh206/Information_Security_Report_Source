@@ -1,0 +1,5 @@
+﻿STT,Thời gian,Chương trình,Đầu vào,Kết quả,Đạt
+1,2026-11-28 18:28:10,ElGamal ký,"p=23, g=5, x=6, k=5, H=7, H'=7","y=8, (r,s)=(20,17), VT=17, VP=17, hợp lệ=True, bản sửa hợp lệ=True",Đạt
+2,2026-11-28 18:28:30,ElGamal ký,"p=23, g=5, x=6, k=9, H=7, H'=7","y=8, (r,s)=(11,13), VT=17, VP=17, hợp lệ=True, bản sửa hợp lệ=True",Đạt
+3,2026-11-28 18:30:13,ElGamal kiểm tra chữ ký,"p=23, g=9, y=5, thông điệp='NGUYEN LUONG HUYNH', (r,s)=(17,20)","VT=10, VP=13, hợp lệ=False",
+4,2026-11-28 18:31:09,Diffie-Hellman,"p=23, g=5, a=6, b=15","A=8, B=19, K_Alice=2, K_Bob=2, khóa AES=dbc1b4c900ffe48d575b5da5c6380401",Đạt

@@ -1,0 +1,49 @@
+# File danh sách lần thử mẫu. Sửa hoặc thêm dòng rồi chạy:  python run_cases.py
+# Cú pháp xem đầu file run_cases.py. Dòng bắt đầu bằng # là chú thích.
+
+# ---------------- SHA-256 (có thể ghi thêm đầu của digest mong đợi để chương trình tự đối chiếu)
+sha256 |  | e3b0c442
+sha256 | abc | ba7816bf
+sha256 | hello
+sha256 | Hello
+sha256 | NGUYEN LUONG HUYNH | 4955190b
+sha256 | Nguyễn Lương Huynh
+sha256 | abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq | 248d6a61
+sha256 | UNOFTRANSPORTHCM
+
+# ---------------- AES-128 CBC (ghi IV để kết quả lặp lại được)
+aes | NGUYEN LUONG HUYNH | UNOFTRANSPORTHCM | 000102030405060708090a0b0c0d0e0f
+aes | NGUYEN LUONG HUYNH | a | 000102030405060708090a0b0c0d0e0f
+aes | NGUYEN LUONG HUYNH | Xin chao cac ban | 000102030405060708090a0b0c0d0e0f
+aes | Nguyễn Lương Huynh | UNOFTRANSPORTHCM | 000102030405060708090a0b0c0d0e0f
+aes | NGUYEN LUONG HUYNH | Truong Dai hoc Giao thong Van tai TP.HCM | 000102030405060708090a0b0c0d0e0f
+aes-khoi | 2b7e151628aed2a6abf7158809cf4f3c | 3243f6a8885a308d313198a2e0370734 | 3925841d
+aes-khoi | 000102030405060708090a0b0c0d0e0f | 00112233445566778899aabbccddeeff | 69c4e0d8
+aes-khoi | NGUYEN LUONG HUYNH | UNOFTRANSPORTHCM
+
+# ---------------- Diffie-Hellman: p g a b  (p phải là số nguyên tố, dòng cuối cố ý sai để xem báo lỗi)
+dh | 23 5 6 15
+dh | 23 5 3 9
+dh | 467 2 153 197
+dh | 1019 2 523 811
+dh | 1000003 2 555555 777777
+dh | 23 2 6 15
+dh | 21 5 6 15
+
+# ---------------- ElGamal bằng số: p g x k H [H']  (k = - là ngẫu nhiên; k = 11 cố ý sai)
+elgamal | 23 5 6 5 7
+elgamal | 23 5 6 5 7 8
+elgamal | 23 5 6 7 7
+elgamal | 23 5 6 11 7
+elgamal | 467 2 127 213 100 101
+
+# ---------------- ElGamal thông điệp: small hoặc big | thông điệp | thông điệp bị sửa | x | k
+elgamal-tn | small | xin chao | xin chao! | 127 | 213
+elgamal-tn | big | xin chao | xin chao!
+elgamal-tn | big | NGUYEN LUONG HUYNH | NGUYEN LUONG HUYNH 2
+
+# ---------------- ElGamal kiểm tra chữ ký nhập tay: p g y H r s | kỳ vọng (dung hoặc sai)
+elgamal-kt | 23 5 8 7 20 17 | dung
+elgamal-kt | 23 5 8 7 20 18 | sai
+elgamal-kt | 23 5 8 8 20 17 | sai
+elgamal-kt | 23 5 8 7 0 17 | sai

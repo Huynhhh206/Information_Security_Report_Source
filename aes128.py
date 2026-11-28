@@ -7,6 +7,7 @@ import secrets
 import time
 import unicodedata
 from sha256_custom import sha256
+from test_log import log_result
 
 SBOX = [
 0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
@@ -323,6 +324,58 @@ def decrypt_cbc_steps(iv, ciphertext, key, max_blocks=1):
 # ----------------------------------------------------------------------
 # Chương trình tương tác
 # ----------------------------------------------------------------------
+HEX = "0123456789abcdefABCDEF"
+
+
+def parse_hex(text, nbytes, label):
+    t = text.replace(" ", "").strip()
+    if len(t) != 2 * nbytes or any(c not in HEX for c in t):
+        raise ValueError(f"{label} phải gồm đúng {2 * nbytes} ký tự hex (0-9, a-f)")
+    return bytes.fromhex(t)
+
+
+def read_key(text):
+    """Khóa: 32 ký tự hex, hoặc họ tên (băm bằng SHA-256 rồi lấy 16 byte đầu)."""
+    t = text.replace(" ", "").strip()
+    if len(t) == 32 and all(c in HEX for c in t):
+        return bytes.fromhex(t), "hex"
+    if not normalize_name(text):
+        raise ValueError("Họ tên hoặc khóa đang để trống")
+    return key_from_full_name(text), "họ tên"
+
+
+def read_block(text):
+    """Một khối 16 byte: 32 ký tự hex, hoặc đúng 16 byte văn bản."""
+    t = text.replace(" ", "").strip()
+    if len(t) == 32 and all(c in HEX for c in t):
+        return bytes.fromhex(t)
+    data = text.encode("utf-8")
+    if len(data) != 16:
+        raise ValueError(f"Khối phải là 32 ký tự hex hoặc đúng 16 byte văn bản (bạn nhập {len(data)} byte)")
+    return data
+
+
+def cbc_report(name, message, iv_hex=""):
+    """Mã hóa CBC thông điệp, giải mã lại để kiểm tra (dùng cho chạy hàng loạt)."""
+    key, how = read_key(name)
+    data = message.encode("utf-8")
+    iv = parse_hex(iv_hex, 16, "IV") if iv_hex.strip() else None
+    iv_used, cipher = encrypt_cbc(data, key, iv)
+    recovered = decrypt_cbc(iv_used, cipher, key)
+    return {"key": key.hex(), "bytes": len(data), "pad": 16 - len(data) % 16, "blocks": len(cipher) // 16,
+            "iv": iv_used.hex(), "cipher": cipher.hex(), "ok": recovered == data}
+
+
+def block_report(key_text, block_text):
+    """Mã hóa rồi giải mã MỘT khối 16 byte (không đệm, không CBC) để so với vector chuẩn."""
+    key, _ = read_key(key_text)
+    block = read_block(block_text)
+    rk = expand_key(key)
+    cipher = encrypt_block(block, rk)
+    return {"key": key.hex(), "block": block.hex(), "cipher": cipher.hex(),
+            "ok": decrypt_block(cipher, rk) == block}
+
+
 def read_choice(prompt, valid):
     """Hỏi đến khi người dùng nhập một lựa chọn hợp lệ."""
     while True:
@@ -411,6 +464,9 @@ def main():
         print("Bản rõ sau giải mã:", recovered.decode("utf-8"))
         assert recovered == message
         print("[PASS] Kiểm tra giải mã trùng bản rõ")
+        n = log_result("AES-128 CBC", f"họ tên={name!r}, thông điệp={message.decode('utf-8')!r}, iv={iv.hex()}",
+                       f"khóa={key.hex()}, {len(message)} byte, bản mã={cipher.hex()}", recovered == message)
+        print(f"(đã ghi lần thử số {n} vào ket_qua_test.csv)")
 
 
 if __name__ == "__main__":

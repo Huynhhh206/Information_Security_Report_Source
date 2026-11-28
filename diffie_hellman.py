@@ -9,6 +9,7 @@ import secrets
 import time
 from sha256_custom import sha256
 from number_theory import is_probable_prime
+from test_log import log_result
 
 P_2048 = int("""
     FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1
@@ -152,8 +153,89 @@ def self_test():
     print("[PASS] Ví dụ nhỏ p=23, kiểm tra khóa không hợp lệ, trao đổi khóa nhóm 2048-bit")
 
 
-def run_exchange(p, g, q, a, b):
-    """Chạy một lần trao đổi khóa và in kết quả."""
+def ask_yes_no(prompt):
+    return input(prompt).strip().lower() in ("y", "yes", "c", "co", "có")
+
+
+def show_number(n, full=False):
+    """Số nhỏ in đầy đủ; số lớn (trên 64 bit) chỉ in đầu và cuối, trừ khi full=True."""
+    text = str(n)
+    if full or n.bit_length() <= 64:
+        return text
+    return f"{text[:14]}...{text[-6:]} ({len(text)} chữ số)"
+
+
+def mod_pow_steps(base, exponent, modulus, label, full=False, max_rows=16):
+    """In bảng bình phương liên tiếp của base^exponent mod modulus (đọc số mũ từ bit thấp lên cao,
+    đúng như hàm mod_pow). Số mũ dài thì chỉ in các dòng đầu và cuối."""
+    bits = bin(exponent)[2:]
+    shown_bits = bits if len(bits) <= 64 else bits[:16] + "..." + bits[-8:]
+    print(f"{label}: {show_number(base, full)} ^ {show_number(exponent, full)} mod {show_number(modulus, full)}")
+    print(f"  Số mũ ở dạng nhị phân: {shown_bits} ({len(bits)} bit, {bits.count('1')} bit bằng 1)")
+    print(f"  {'i':>4} {'bit':>3}  {'base^(2^i) mod m':<38} {'kết quả tích lũy':<38}")
+    result, b, e, i = 1, base % modulus, exponent, 0
+    rows = []
+    while e > 0:
+        bit = e & 1
+        if bit:
+            result = (result * b) % modulus
+        rows.append((i, bit, b, result))
+        b = (b * b) % modulus
+        e >>= 1
+        i += 1
+
+    def line(row):
+        i_, bit_, b_, r_ = row
+        return f"  {i_:>4} {bit_:>3}  {show_number(b_, full):<38} {show_number(r_, full):<38}"
+
+    if len(rows) <= max_rows:
+        for row in rows:
+            print(line(row))
+    else:
+        head_rows, tail_rows = max_rows - 2, 2
+        for row in rows[:head_rows]:
+            print(line(row))
+        print(f"  ... (còn {len(rows) - head_rows - tail_rows} dòng) ...")
+        for row in rows[-tail_rows:]:
+            print(line(row))
+    assert result == mod_pow(base, exponent, modulus)
+    print(f"  => {label} = {show_number(result, full)}")
+    return result
+
+
+def group_order(g, p, limit=2_000_000):
+    """Bậc của g modulo p bằng cách thử từng lũy thừa (chỉ làm khi p không quá lớn)."""
+    if p > limit:
+        return None
+    value = 1
+    for t in range(1, p):
+        value = value * g % p
+        if value == 1:
+            return t
+    return None
+
+
+def exchange_report(p, g, a, b):
+    """Một lần trao đổi khóa, không in gì (dùng cho chạy hàng loạt). Tham số sai thì báo ValueError."""
+    if p < 5:
+        raise ValueError("p phải từ 5 trở lên")
+    if not is_probable_prime(p):
+        raise ValueError(f"{p} không phải số nguyên tố (Miller-Rabin)")
+    if not 2 <= g <= p - 2:
+        raise ValueError(f"g phải trong khoảng 2 đến {p - 2}")
+    for label, value in (("a", a), ("b", b)):
+        if not 2 <= value <= p - 2:
+            raise ValueError(f"Số bí mật {label} phải trong khoảng 2 đến {p - 2}")
+    q = Q if (p == P and g == G) else None
+    A, B = public_key(a, p, g), public_key(b, p, g)
+    secret_a = shared_secret(B, a, p, q)
+    secret_b = shared_secret(A, b, p, q)
+    return {"A": A, "B": B, "key_alice": secret_a, "key_bob": secret_b, "equal": secret_a == secret_b,
+            "order": group_order(g, p), "aes_key": derive_key(secret_a, p).hex()}
+
+
+def run_exchange(p, g, q, a, b, steps=False, full=False):
+    """Chạy một lần trao đổi khóa, in kết quả (và các bước nếu steps=True). Trả về dict hoặc None nếu lỗi."""
     A = public_key(a, p, g)
     B = public_key(b, p, g)
     try:
@@ -161,19 +243,31 @@ def run_exchange(p, g, q, a, b):
         secret_b = shared_secret(A, b, p, q)
     except ValueError as error:
         print("[LỖI]", error)
-        return
+        return None
+    if steps:
+        print("\n--- CÁC BƯỚC TÍNH (bình phương liên tiếp) ---")
+        mod_pow_steps(g, a, p, "A = g^a mod p (Alice)", full)
+        mod_pow_steps(g, b, p, "B = g^b mod p (Bob)", full)
+        mod_pow_steps(B, a, p, "K = B^a mod p (Alice)", full)
+        mod_pow_steps(A, b, p, "K = A^b mod p (Bob)", full)
     print("\n--- KẾT QUẢ ---")
-    print("Tham số công khai: p =", p)
+    print("Tham số công khai: p =", show_number(p, full))
     print("g =", g)
-    print("Số bí mật của Alice a =", a)
-    print("Số bí mật của Bob   b =", b)
-    print("Khóa công khai Alice A = g^a mod p =", A)
-    print("Khóa công khai Bob   B = g^b mod p =", B)
-    print("Khóa chung phía Alice = B^a mod p =", secret_a)
-    print("Khóa chung phía Bob   = A^b mod p =", secret_b)
+    order = group_order(g, p)
+    if order:
+        print(f"Bậc của g modulo p là {order}" + (" (g sinh toàn bộ nhóm)" if order == p - 1
+                                                  else f" (nhỏ hơn p - 1 = {p - 1}, g không sinh toàn bộ nhóm)"))
+    print("Số bí mật của Alice a =", show_number(a, full))
+    print("Số bí mật của Bob   b =", show_number(b, full))
+    print("Khóa công khai Alice A = g^a mod p =", show_number(A, full))
+    print("Khóa công khai Bob   B = g^b mod p =", show_number(B, full))
+    print("Khóa chung phía Alice = B^a mod p =", show_number(secret_a, full))
+    print("Khóa chung phía Bob   = A^b mod p =", show_number(secret_b, full))
     print("Hai khóa chung bằng nhau:", secret_a == secret_b)
-    print("Khóa AES-128 suy ra (hex):", derive_key(secret_a, p).hex())
+    aes_key = derive_key(secret_a, p).hex()
+    print("Khóa AES-128 suy ra (hex):", aes_key)
     assert secret_a == secret_b
+    return {"A": A, "B": B, "key_alice": secret_a, "key_bob": secret_b, "equal": True, "aes_key": aes_key}
 
 
 def main():
@@ -206,7 +300,16 @@ def main():
                          2, p - 2, allow_blank=True)
             if b is None:
                 b = generate_private_key(p)
-        run_exchange(p, g, q, a, b)
+        steps = ask_yes_no("Hiển thị các bước tính? (y/N): ")
+        full = ask_yes_no("In đầy đủ các số lớn? (y/N, mặc định rút gọn): ") if p.bit_length() > 64 else False
+        r = run_exchange(p, g, q, a, b, steps, full)
+        if r:
+            n = log_result("Diffie-Hellman",
+                           f"p={show_number(p)}, g={g}, a={show_number(a)}, b={show_number(b)}",
+                           f"A={show_number(r['A'])}, B={show_number(r['B'])}, "
+                           f"K_Alice={show_number(r['key_alice'])}, K_Bob={show_number(r['key_bob'])}, "
+                           f"khóa AES={r['aes_key']}", r["equal"])
+            print(f"(đã ghi lần thử số {n} vào ket_qua_test.csv)")
 
 
 if __name__ == "__main__":

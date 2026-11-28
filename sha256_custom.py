@@ -5,6 +5,8 @@ Chỉ dùng thư viện chuẩn để đọc dữ liệu/thời gian; không dù
 import struct
 import time
 
+from test_log import log_result
+
 K = [
     0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
     0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
@@ -160,6 +162,25 @@ def benchmark(rounds=1000):
           f"{elapsed/rounds*1000:.4f} ms/lần")
 
 
+def padding_info(byte_length):
+    """Trả về (độ dài bit, số bit 0 thêm vào, số khối 512 bit) khi đệm thông điệp."""
+    bit_length = byte_length * 8
+    zero_bits = (447 - bit_length) % 512          # l + 1 + K = 448 (mod 512)
+    blocks = (bit_length + 1 + zero_bits + 64) // 512
+    return bit_length, zero_bits, blocks
+
+
+def hash_report(text):
+    """Băm một chuỗi (UTF-8) và trả về thông tin để hiển thị hoặc ghi lại (dùng cho chạy hàng loạt)."""
+    data = text.encode("utf-8")
+    start = time.perf_counter()
+    digest = sha256(data)
+    ms = (time.perf_counter() - start) * 1000
+    bit_length, zero_bits, blocks = padding_info(len(data))
+    return {"text": text, "bytes": len(data), "bits": bit_length, "zero_bits": zero_bits,
+            "blocks": blocks, "digest": digest, "ms": ms}
+
+
 def read_choice(prompt, valid):
     """Hỏi đến khi người dùng nhập một lựa chọn hợp lệ."""
     while True:
@@ -206,9 +227,14 @@ def main():
         if ask_yes_no("Hiển thị các bước tính? (y/N): "):
             blocks = read_positive("  Số khối in chi tiết (Enter = 1): ", 1)
             rounds = read_positive("  Số vòng nén in chi tiết mỗi khối, 1-64 (Enter = 64): ", 64)
-            sha256_steps(text, blocks, min(rounds, 64))
+            digest = sha256_steps(text, blocks, min(rounds, 64))
         else:
-            print("SHA-256:", sha256(text))
+            digest = sha256(text)
+            print("SHA-256:", digest)
+        info = hash_report(text)
+        n = log_result("SHA-256", f"chuỗi={text!r}",
+                       f"{info['bytes']} byte, {info['blocks']} khối, digest={digest}")
+        print(f"(đã ghi lần thử số {n} vào ket_qua_test.csv)")
 
 
 if __name__ == "__main__":

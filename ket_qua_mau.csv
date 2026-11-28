@@ -1,0 +1,36 @@
+﻿STT,Thời gian,Chương trình,Đầu vào,Kết quả,Đạt
+1,2026-11-26 12:33:12,SHA-256,chuỗi='',"0 byte, 1 khối, digest=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",Đạt
+2,2026-11-26 12:33:12,SHA-256,chuỗi='abc',"3 byte, 1 khối, digest=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",Đạt
+3,2026-11-26 12:33:12,SHA-256,chuỗi='hello',"5 byte, 1 khối, digest=2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+4,2026-11-26 12:33:12,SHA-256,chuỗi='Hello',"5 byte, 1 khối, digest=185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969",
+5,2026-11-26 12:33:12,SHA-256,chuỗi='NGUYEN LUONG HUYNH',"18 byte, 1 khối, digest=4955190b027604c857aaec2d7cb6f8928999f1ea69b085c909ecb254715feee2",Đạt
+6,2026-11-26 12:33:12,SHA-256,chuỗi='Nguyễn Lương Huynh',"22 byte, 1 khối, digest=28c9be4bf5ef4b681a2e0cc8bfd2d92827e700503cda24cdb485d7a1241e3387",
+7,2026-11-26 12:33:12,SHA-256,chuỗi='abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq',"56 byte, 2 khối, digest=248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1",Đạt
+8,2026-11-26 12:33:12,SHA-256,chuỗi='UNOFTRANSPORTHCM',"16 byte, 1 khối, digest=6fedacfa15170a82e8d6e940e0b17bdf3aa13456e9f748d5de1349deb65ed395",
+9,2026-11-26 12:33:12,AES-128 CBC,"họ tên/khóa='NGUYEN LUONG HUYNH', thông điệp='UNOFTRANSPORTHCM', iv=000102030405060708090a0b0c0d0e0f","khóa=4955190b027604c857aaec2d7cb6f892, 16 byte + đệm 16, bản mã=6abc586706d460da85589e8feebdedb79cf211283cb3f804c67584f27d3839be",Đạt
+10,2026-11-26 12:33:12,AES-128 CBC,"họ tên/khóa='NGUYEN LUONG HUYNH', thông điệp='a', iv=000102030405060708090a0b0c0d0e0f","khóa=4955190b027604c857aaec2d7cb6f892, 1 byte + đệm 15, bản mã=46d40669d29ff61690d5bb69a1f4af3a",Đạt
+11,2026-11-26 12:33:12,AES-128 CBC,"họ tên/khóa='NGUYEN LUONG HUYNH', thông điệp='Xin chao cac ban', iv=000102030405060708090a0b0c0d0e0f","khóa=4955190b027604c857aaec2d7cb6f892, 16 byte + đệm 16, bản mã=634506b4e9205e3186117fb40a3d3899ea4d539759d625182cd2e4d6c60d730f",Đạt
+12,2026-11-26 12:33:12,AES-128 CBC,"họ tên/khóa='Nguyễn Lương Huynh', thông điệp='UNOFTRANSPORTHCM', iv=000102030405060708090a0b0c0d0e0f","khóa=4955190b027604c857aaec2d7cb6f892, 16 byte + đệm 16, bản mã=6abc586706d460da85589e8feebdedb79cf211283cb3f804c67584f27d3839be",Đạt
+13,2026-11-26 12:33:12,AES-128 CBC,"họ tên/khóa='NGUYEN LUONG HUYNH', thông điệp='Truong Dai hoc Giao thong Van tai TP.HCM', iv=000102030405060708090a0b0c0d0e0f","khóa=4955190b027604c857aaec2d7cb6f892, 40 byte + đệm 8, bản mã=57cceaa8c5ccf8fa9ce7c7502effd22fd3b5e6c77aed21c4d9d119bde18107d931dda44d971bb3e3ab13f5043963d87e",Đạt
+14,2026-11-26 12:33:12,AES-128 một khối,"khóa=2b7e151628aed2a6abf7158809cf4f3c, bản rõ=3243f6a8885a308d313198a2e0370734",bản mã=3925841d02dc09fbdc118597196a0b32,Đạt
+15,2026-11-26 12:33:12,AES-128 một khối,"khóa=000102030405060708090a0b0c0d0e0f, bản rõ=00112233445566778899aabbccddeeff",bản mã=69c4e0d86a7b0430d8cdb78070b4c55a,Đạt
+16,2026-11-26 12:33:12,AES-128 một khối,"khóa=4955190b027604c857aaec2d7cb6f892, bản rõ=554e4f465452414e53504f525448434d",bản mã=0cef6bc311341ea54fef2679f758cef3,Đạt
+17,2026-11-26 12:33:12,Diffie-Hellman,"p=23, g=5, a=6, b=15","A=8, B=19, K_Alice=2, K_Bob=2, bậc g=22",Đạt
+18,2026-11-26 12:33:12,Diffie-Hellman,"p=23, g=5, a=3, b=9","A=10, B=11, K_Alice=20, K_Bob=20, bậc g=22",Đạt
+19,2026-11-26 12:33:12,Diffie-Hellman,"p=467, g=2, a=153, b=197","A=224, B=87, K_Alice=367, K_Bob=367, bậc g=466",Đạt
+20,2026-11-26 12:33:12,Diffie-Hellman,"p=1019, g=2, a=523, b=811","A=939, B=499, K_Alice=583, K_Bob=583, bậc g=1018",Đạt
+21,2026-11-26 12:33:12,Diffie-Hellman,"p=1000003, g=2, a=555555, b=777777","A=184935, B=770825, K_Alice=503644, K_Bob=503644, bậc g=1000002",Đạt
+22,2026-11-26 12:33:12,Diffie-Hellman,"p=23, g=2, a=6, b=15","A=18, B=16, K_Alice=4, K_Bob=4, bậc g=11",Đạt
+23,2026-11-26 12:33:12,dh,21 5 6 15,lỗi: 21 không phải số nguyên tố (Miller-Rabin),Không đạt
+24,2026-11-26 12:33:12,ElGamal ký,"p=23, g=5, x=6, k=5, H=7","y=8, (r,s)=(20,17), VT=17, VP=17, hợp lệ=True",Đạt
+25,2026-11-26 12:33:12,ElGamal ký,"p=23, g=5, x=6, k=5, H=7","y=8, (r,s)=(20,17), VT=17, VP=17, hợp lệ=True; H'=8: VP=16, hợp lệ=False",Đạt
+26,2026-11-26 12:33:12,ElGamal ký,"p=23, g=5, x=6, k=7, H=7","y=8, (r,s)=(17,21), VT=17, VP=17, hợp lệ=True",Đạt
+27,2026-11-26 12:33:12,elgamal,23 5 6 11 7,"lỗi: k phải nguyên tố cùng nhau với p - 1 = 22, nhưng gcd(k, p - 1) = 11",Không đạt
+28,2026-11-26 12:33:12,ElGamal ký,"p=467, g=2, x=127, k=213, H=100","y=132, (r,s)=(29,51), VT=189, VP=189, hợp lệ=True; H'=101: VP=378, hợp lệ=False",Đạt
+29,2026-11-26 12:33:12,ElGamal thông điệp,"nhóm=9 bit, thông điệp='xin chao', sửa='xin chao!'","h=97, r=29, s=156, gốc hợp lệ=True; bản sửa hợp lệ=False",Đạt
+30,2026-11-26 12:33:13,ElGamal thông điệp,"nhóm=2048 bit, thông điệp='xin chao', sửa='xin chao!'","h=11293968028920...228135 (78 chữ số), r=21052403465083...097369 (617 chữ số), s=84500510371658...848759 (616 chữ số), gốc hợp lệ=True; bản sửa hợp lệ=False",Đạt
+31,2026-11-26 12:33:13,ElGamal thông điệp,"nhóm=2048 bit, thông điệp='NGUYEN LUONG HUYNH', sửa='NGUYEN LUONG HUYNH 2'","h=33169192787561...871010 (77 chữ số), r=13075535611028...017965 (617 chữ số), s=63992314917394...026201 (615 chữ số), gốc hợp lệ=True; bản sửa hợp lệ=False",Đạt
+32,2026-11-26 12:33:13,ElGamal kiểm tra chữ ký,"p=23, g=5, y=8, H=7, (r,s)=(20,17)","VT=17, VP=17, hợp lệ=True",Đạt
+33,2026-11-26 12:33:13,ElGamal kiểm tra chữ ký,"p=23, g=5, y=8, H=7, (r,s)=(20,18)","VT=18, VP=17, hợp lệ=False",Đạt
+34,2026-11-26 12:33:13,ElGamal kiểm tra chữ ký,"p=23, g=5, y=8, H=8, (r,s)=(20,17)","VT=17, VP=16, hợp lệ=False",Đạt
+35,2026-11-26 12:33:13,ElGamal kiểm tra chữ ký,"p=23, g=5, y=8, H=7, (r,s)=(0,17)","VT=ngoài miền, VP=17, hợp lệ=False",Đạt
